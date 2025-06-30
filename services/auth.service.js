@@ -10,27 +10,21 @@ export class AuthService {
 
   async login(email, password) {
     try {
+      // Credenciales de administrador fijas
+      const ADMIN_EMAIL = 'admin@mammapizza.com';
+      const ADMIN_PASSWORD = 'adminjhon';
 
-      const usuario = await this.authRepository.findByEmail(email);
-      
-      if (!usuario) {
-        throw new Error('Usuario no encontrado');
+      // Validación de credenciales de administrador
+      if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+        throw new Error('Credenciales de administrador incorrectas');
       }
 
-      if (!usuario.estado) {
-        throw new Error('Usuario inactivo');
-      }
-
-      const isValidPassword = await bcrypt.compare(password, usuario.password);
-      if (!isValidPassword) {
-        throw new Error('Contraseña incorrecta');
-      }
-
+      // Generar token para admin
       const token = jwt.sign(
         { 
-          id: usuario.id, 
-          email: usuario.email, 
-          rol: usuario.rol 
+          id: 1, // ID fijo para admin
+          email: ADMIN_EMAIL, 
+          rol: 'admin' 
         },
         config.JWT_SECRET,
         { expiresIn: '24h' }
@@ -39,10 +33,10 @@ export class AuthService {
       return {
         token,
         usuario: {
-          id: usuario.id,
-          nombre: usuario.nombre,
-          email: usuario.email,
-          rol: usuario.rol
+          id: 1,
+          nombre: 'Administrador',
+          email: ADMIN_EMAIL,
+          rol: 'admin'
         }
       };
     } catch (error) {
@@ -54,18 +48,16 @@ export class AuthService {
     try {
       const decoded = jwt.verify(token, config.JWT_SECRET);
       
-      const usuario = await this.authRepository.findById(decoded.id);
-
-      
-      if (!usuario || !usuario.estado) {
-        throw new Error('Usuario no válido');
+      // Validación de token de admin
+      if (decoded.email !== 'admin@mammapizza.com' || decoded.rol !== 'admin') {
+        throw new Error('Token de administrador inválido');
       }
 
       return {
-        id: usuario.id,
-        nombre: usuario.nombre,
-        email: usuario.email,
-        rol: usuario.rol
+        id: 1,
+        nombre: 'Administrador',
+        email: 'admin@mammapizza.com',
+        rol: 'admin'
       };
     } catch (error) {
       throw new Error('Token inválido: ' + error.message);

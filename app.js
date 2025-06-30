@@ -23,8 +23,7 @@ const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'https://mammapizza-frontend.onrender.com',
-      'http://localhost:3000',
+      'https://mammapizza-frontend.onrender.com/',
       /\.mammapizza\.com$/ // Permite subdominios
     ];
 
