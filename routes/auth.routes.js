@@ -9,8 +9,11 @@ const authController = new AuthController();
 router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 
-// Rutas protegidas
+// Rutas de verificación
 router.get('/verify', authController.verify);
+router.post('/verify', authController.verify);  // Agregar soporte para POST
+
+// Rutas protegidas
 router.get('/admin/check', authenticateToken, requireAdmin, (req, res) => {
   res.json({
     success: true,

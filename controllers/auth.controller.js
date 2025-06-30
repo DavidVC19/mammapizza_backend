@@ -84,16 +84,18 @@ export class AuthController {
   verify = async (req, res) => {
     try {
       console.log('[AuthController] Verificación de token iniciada');
+      console.log('Método de solicitud:', req.method);
       console.log('Cookies recibidas:', req.cookies);
       console.log('Headers recibidos:', req.headers);
+      console.log('Cuerpo de la solicitud:', req.body);
 
-      let token = req.cookies.authToken;
+      // Buscar token en múltiples lugares
+      let token = 
+        req.cookies.authToken || 
+        req.headers.authorization?.replace('Bearer ', '') ||
+        req.body.token;
 
-      // Fallback para token en headers
-      if (!token && req.headers.authorization?.startsWith('Bearer ')) {
-        token = req.headers.authorization.substring(7);
-        console.log('[AuthController] Token obtenido de headers');
-      }
+      console.log('[AuthController] Token encontrado:', !!token);
 
       if (!token) {
         console.warn('[AuthController] No se encontró token');
@@ -115,7 +117,7 @@ export class AuthController {
       console.error('[AuthController] Error en verificación:', error.message);
       res.status(401).json({
         success: false,
-        message: error.message
+        message: error.message || 'Error de autenticación'
       });
     }
   };
