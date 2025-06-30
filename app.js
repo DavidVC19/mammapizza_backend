@@ -21,13 +21,26 @@ const app = express();
 
 // Configuración CORS mejorada para producción
 const corsOptions = {
-  origin: [
-    'https://mammapizza-frontend.onrender.com',
-    'http://localhost:3000' // Para desarrollo
-  ],
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'https://mammapizza-frontend.onrender.com',
+      'http://localhost:3000',
+      /\.mammapizza\.com$/ // Permite subdominios
+    ];
+
+    if (!origin || allowedOrigins.some(allowed => 
+      typeof allowed === 'string' 
+        ? allowed === origin 
+        : allowed.test(origin)
+    )) {
+      callback(null, true);
+    } else {
+      callback(new Error('No permitido por CORS'));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   exposedHeaders: ['Set-Cookie']
 };
 
