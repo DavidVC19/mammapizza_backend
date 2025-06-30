@@ -17,10 +17,9 @@ export class AuthService {
         throw new Error('Credenciales de administrador incorrectas');
       }
 
-      // Generar token para admin
       const token = jwt.sign(
         { 
-          id: 1, // ID fijo para admin
+          id: 1, 
           email: ADMIN_EMAIL, 
           rol: 'admin' 
         },
