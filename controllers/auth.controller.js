@@ -21,9 +21,10 @@ export class AuthController {
 
       res.cookie('authToken', result.token, {
         httpOnly: true,
-        secure: config.NODE_ENV === 'production',
-        sameSite: 'lax',
-        maxAge: 24 * 60 * 60 * 1000 
+        secure: true,
+        sameSite: 'none',
+        maxAge: 24 * 60 * 60 * 1000,
+        domain: config.FRONTEND_HOST
       });
 
       res.json({
