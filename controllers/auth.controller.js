@@ -5,6 +5,7 @@ export class AuthController {
   constructor() {
     this.authService = new AuthService();
   }
+  
 
   login = async (req, res) => {
     try {
