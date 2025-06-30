@@ -19,26 +19,28 @@ import config from './config/config.js';
 
 const app = express();
 
-// CORS configuración mejorada para producción
-app.use(cors({
+// Configuración CORS mejorada para producción
+const corsOptions = {
   origin: [
-    config.FRONTEND_HOST,
-    'https://tu-dominio-frontend.com', // Agrega tu dominio específico
-    'http://localhost:3000', // Para desarrollo local si es necesario
+    'https://mammapizza-frontend.onrender.com',
+    'http://localhost:3000' // Para desarrollo
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   exposedHeaders: ['Set-Cookie']
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
 
-// Middleware adicional para debugging en producción
+// Middleware de logging para debugging
 app.use((req, res, next) => {
-  console.log('Request from:', req.get('Origin'));
-  console.log('Cookies received:', req.cookies);
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+  console.log('Headers:', req.headers);
+  console.log('Cookies:', req.cookies);
   next();
 });
 
