@@ -19,17 +19,22 @@ export class AuthController {
 
       const result = await this.authService.login(email, password);
 
-      res.cookie('authToken', result.token, {
+      // Configuración de cookie mejorada para producción
+      const cookieOptions = {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000
-      });
+        secure: process.env.NODE_ENV === 'production', // Solo HTTPS en producción
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000, // 24 horas
+        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost' // Sin domain en producción cross-origin
+      };
+
+      res.cookie('authToken', result.token, cookieOptions);
 
       res.json({
         success: true,
         message: 'Login exitoso',
-        usuario: result.usuario
+        usuario: result.usuario,
+        token: result.token // Enviar también en el body como fallback
       });
     } catch (error) {
       res.status(401).json({
@@ -41,7 +46,16 @@ export class AuthController {
 
   logout = async (req, res) => {
     try {
-      res.clearCookie('authToken');
+      // Limpiar cookie con las mismas opciones
+      const cookieOptions = {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+        domain: process.env.NODE_ENV === 'production' ? undefined : 'localhost'
+      };
+
+      res.clearCookie('authToken', cookieOptions);
+      
       res.json({
         success: true,
         message: 'Logout exitoso'
@@ -56,13 +70,20 @@ export class AuthController {
 
   verify = async (req, res) => {
     try {
-      const token = req.cookies.authToken;
+      let token = req.cookies.authToken;
+
+      // Fallback: buscar token en headers si no está en cookies
+      if (!token) {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith('Bearer ')) {
+          token = authHeader.substring(7);
+        }
+      }
 
       if (!token) {
-
         return res.status(401).json({
           success: false,
-          message: 'No hay token'
+          message: 'No hay token de autenticación'
         });
       }
 
