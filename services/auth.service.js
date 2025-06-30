@@ -10,11 +10,9 @@ export class AuthService {
 
   async login(email, password) {
     try {
-      // Credenciales de administrador fijas
       const ADMIN_EMAIL = 'admin@mammapizza.com';
       const ADMIN_PASSWORD = 'adminjhon';
 
-      // Validación de credenciales de administrador
       if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
         throw new Error('Credenciales de administrador incorrectas');
       }
