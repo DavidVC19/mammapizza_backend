@@ -23,8 +23,7 @@ export class AuthController {
         httpOnly: true,
         secure: true,
         sameSite: 'none',
-        maxAge: 24 * 60 * 60 * 1000,
-        domain: config.FRONTEND_HOST
+        maxAge: 24 * 60 * 60 * 1000
       });
 
       res.json({
