@@ -23,8 +23,9 @@ const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'https://mammapizza-frontend.onrender.com/',
-      /\.mammapizza\.com$/ // Permite subdominios
+      'https://mammapizza-frontend.onrender.com',  // Quitar la barra diagonal final
+      'http://localhost:3000',  // Añadir localhost para desarrollo
+      /\.mammapizza\.com$/
     ];
 
     console.log('[CORS] Origen de la solicitud:', origin);
@@ -43,8 +44,10 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
-  exposedHeaders: ['Set-Cookie']
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Origin', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Set-Cookie'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
 
 app.use(cors(corsOptions));

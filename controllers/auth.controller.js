@@ -11,44 +11,17 @@ export class AuthController {
     try {
       const { email, password } = req.body;
 
-      console.log('[AuthController] Intento de login para:', email);
-      
-      if (!email || !password) {
-        console.warn('[AuthController] Faltan credenciales');
-        return res.status(400).json({
-          success: false,
-          message: 'Email y contraseña son requeridos'
-        });
-      }
+      // Llamar al servicio de login
+      const loginResult = await this.authService.login(email, password);
 
-      const result = await this.authService.login(email, password);
-      console.log('[AuthController] Login exitoso para:', email);
-
-      // Configuración mejorada de cookies para producción
-      const isProduction = process.env.NODE_ENV === 'production';
-      const cookieOptions = {
-        httpOnly: true,
-        secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax',
-        maxAge: 24 * 60 * 60 * 1000, // 24 horas
-        domain: isProduction ? '.onrender.com' : undefined // Dominio compartido para subdominios
-      };
-
-      res.cookie('authToken', result.token, cookieOptions);
-      console.log('[AuthController] Cookie establecida con opciones:', cookieOptions);
-
-      res.json({
-        success: true,
-        message: 'Login exitoso',
-        usuario: result.usuario,
-        token: result.token // Fallback para localStorage
-      });
-
+      // Enviar respuesta de éxito
+      res.status(200).json(loginResult);
     } catch (error) {
-      console.error('[AuthController] Error en login:', error.message);
+      // Manejar errores de autenticación
+      console.error('Error de inicio de sesión:', error);
       res.status(401).json({
         success: false,
-        message: error.message
+        message: error.message || 'Error de autenticación'
       });
     }
   };

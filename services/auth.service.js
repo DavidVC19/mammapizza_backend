@@ -10,34 +10,37 @@ export class AuthService {
 
   async login(email, password) {
     try {
+      // Credenciales de administrador fijas
       const ADMIN_EMAIL = 'admin@mammapizza.com';
       const ADMIN_PASSWORD = 'adminjhon';
 
+      // Validación de credenciales de administrador
       if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
-        throw new Error('Credenciales de administrador incorrectas');
+        throw new Error('Credenciales incorrectas');
       }
 
-      const token = jwt.sign(
-        { 
-          id: 1, 
-          email: ADMIN_EMAIL, 
-          rol: 'admin' 
-        },
-        config.JWT_SECRET,
-        { expiresIn: '24h' }
-      );
-
+      // Generar respuesta de éxito para admin
       return {
-        token,
+        success: true,
+        message: 'Inicio de sesión exitoso',
         usuario: {
           id: 1,
-          nombre: 'Administrador',
           email: ADMIN_EMAIL,
           rol: 'admin'
         }
+        // Comentar temporalmente la generación de token
+        // token: jwt.sign(
+        //   { 
+        //     id: 1, 
+        //     email: ADMIN_EMAIL, 
+        //     rol: 'admin' 
+        //   }, 
+        //   config.JWT_SECRET, 
+        //   { expiresIn: '1h' }
+        // )
       };
     } catch (error) {
-      throw new Error(error.message);
+      throw error;
     }
   }
 
