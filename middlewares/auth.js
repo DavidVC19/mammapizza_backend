@@ -4,12 +4,21 @@ const authService = new AuthService();
 
 export const authenticateToken = async (req, res, next) => {
   try {
-    const token = req.cookies.authToken;
+    // Buscar token en múltiples lugares
+    let token = 
+      req.cookies.authToken || 
+      req.headers.authorization?.replace('Bearer ', '') ||
+      req.body.token;
+
+    console.log('[Middleware] Token encontrado:', !!token);
+    console.log('[Middleware] Cookies:', req.cookies);
+    console.log('[Middleware] Headers:', req.headers);
 
     if (!token) {
+      console.warn('[Middleware] Token no encontrado');
       return res.status(401).json({
         success: false,
-        message: 'Token no encontrado'
+        message: 'No se encontró token de autenticación'
       });
     }
 
@@ -17,9 +26,10 @@ export const authenticateToken = async (req, res, next) => {
     req.user = usuario;
     next();
   } catch (error) {
+    console.error('[Middleware] Error de autenticación:', error);
     return res.status(401).json({
       success: false,
-      message: 'Token inválido'
+      message: 'Token inválido o expirado'
     });
   }
 };
