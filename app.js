@@ -23,18 +23,21 @@ const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
     const allowedOrigins = [
-      'https://mammapizza-frontend.onrender.com',
-      'http://localhost:3000',
+      'https://mammapizza-frontend.onrender.com/',
       /\.mammapizza\.com$/ // Permite subdominios
     ];
+
+    console.log('[CORS] Origen de la solicitud:', origin);
 
     if (!origin || allowedOrigins.some(allowed => 
       typeof allowed === 'string' 
         ? allowed === origin 
         : allowed.test(origin)
     )) {
+      console.log('[CORS] Origen permitido');
       callback(null, true);
     } else {
+      console.warn('[CORS] Origen no permitido:', origin);
       callback(new Error('No permitido por CORS'));
     }
   },
